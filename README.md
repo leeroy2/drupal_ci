@@ -6,4 +6,4 @@ to the remote machine
 
 Instructions:
 In order to deploy drupal websites please create prd.properties and (or) test.properties and fill in the missing property values from the initial build.xml file.
-build.xml file should be at ${drupal.root.dir} of your repo.
+build.xml file should be at ${drupal.root.dir} of your repo which contains the drupal website.
