@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="FRA" default="hello">
+
+  <property name="basedir" value="." />
+  <property file="${env}.properties" />
+  <property name="source.root.dir" value="${basedir}" />
+  <property name="source.fra.drupal.dir" value="${basedir}/fra/sites/all" />
+  <property name="source.fra.dvs.dir" value="${basedir}/DVS" />
+
+  <target name="hello" description="Default target">
+    <echo msg="Please select a target" />
+  </target>
+  
+<!-- CHECK SYNTAX WITH LINT -->  
+  <target name="check-syntax" depends="" description="Checking PHP syntax">
+    <echo msg="Checking PHP syntax..." />
+    <phplint haltonfailure="true">
+      <fileset dir="${source.fra.drupal.dir}" id="phpfiles">
+        <include name="*.php" />
+        <include name="**/*.php" />
+        <include name="**/*.inc" />
+        <include name="**/*.module" />
+	    <include name="**/*.install" />
+      </fileset>
+    </phplint>
+  </target>
+  
+<!-- DEPLOY DVS TO REMOTE MACHINE --> 
+  <target name="deploy-dvs" depends="" description="Deploy DVS to destination target">
+    <scp username="${destination.host.username}" 
+	     password="${destination.host.password}"
+	     host="${destination.dvs.host.address}" 
+		 todir="${destination.host.dvs.dir}"> 
+		   <fileset dir="${source.fra.dvs.dir}">
+		     <include name="**" />
+	       </fileset>
+	</scp>
+  </target>
+
+<!-- DEPLOY DVS TO LOCAL MACHINE -->
+  <target name="deploy-dvs-local" depends="" description="Deploy DVS to local destination target">
+    <copy todir="${destination.host.dvs.dir}" overwrite="true">
+      <fileset dir="${source.fra.dvs.dir}">
+	    <include name="**" />
+	  </fileset>
+	</copy>
+  </target>
+
+<!-- DEPLOY DRUPAL TO REMOTE MACHINE -->     
+  <target name="deploy-drupal" depends="check-syntax" description="Deploy Drupal site (files under sites/all) to remote machine">
+	<!--scp todir="${destination.drupal.uri}" trust="true" -->
+	<scp username="${destination.host.drupal.username}" 
+	     password="${destination.host.password}"
+	     host="${destination.drupal.host.address}" 
+		 todir="${destination.host.drupal.dir}/sites/all">
+	       <fileset dir="${source.fra.drupal.dir}">
+	         <include name="**" />
+	       </fileset>
+	</scp>
+  </target> 
+
+<!-- DEPLOY DRUPAL TO LOCAL MACHINE -->  
+  <target name="deploy-drupal-local" depends="check-syntax" description="Deploy Drupal site (files under sites/all) to local machine">
+        <echo msg="Copy drupal to local directory" />
+		<copy todir="${destination.host.drupal.dir}/drupal/sites/all" overwrite="true">
+			<fileset dir="${source.fra.drupal.dir}">
+				<include name="**" />
+			</fileset>
+		</copy>
+  </target> 
+  
+</project>
